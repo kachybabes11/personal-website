@@ -48,6 +48,13 @@
 </p>
 
 <h5>Media</h5>
+    <img src="C:\Users\Pc\Downloads\mypictures\image0.jpeg" alt="My Image"> <br>
+    <img src = "C:\Users\Pc\Downloads\mypictures\image2.jpeg" alt="My picture"> <br>
+    <img src = "C:\Users\Pc\Downloads\mypictures\image4.jpeg" alt= "my picture"> <br>
+    <img src = "C:\Users\Pc\Downloads\mypictures\image3.jpeg" alt="my friend and I"> <br>
+    <img src="C:\Users\Pc\Downloads\mypictures\image5.jpeg" alt="my friend and I"><br>
+    <img src="C:\Users\Pc\Downloads\mypictures\image6.jpeg" alt="my picture">Windows
+ <br> <br> <br>
 
 <button id="myButton">Click Me</button>
 
