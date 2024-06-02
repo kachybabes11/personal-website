@@ -13,34 +13,27 @@
             font-size: 20px;
         }
 
-        h2, h3, h4, h5 {
+        h2, h4, h5 {
             color: black;
             text-align: center;
             font-size: 18px;
         }
 
         p {
-            font-family: verdana;
+            font-family: arial;
             font-size: 16px;
         }
     </style>
 </head>
 <body>
 
-<h1>My professional website</h1>
-<p>I am a resourceful individual who brings a wide range of skills to the table. I may not have enough experience but I am willing to equip myself along the line. This site is just the tip of what I have to offer.</p>
+<h1>My personal website</h1>
+<p> My name is Anyanwu-Njoku Onyedikachi Linda. I am a resourceful and aspiring computer science student with a foundation in web development, database management and data structures. I have a passion for continuous learning and development. I worked wonderfully on some group collaborations in the past as well.</p>
 
 <h2>Education</h2>
-<p><strong>Nnamdi Azikiwe University, Awka</strong> - B.Sc Computer Science in view
-<em>January 2022 ~ present</em></p>
+<p><strong>Nnamdi Azikiwe University, Awka</strong> - B.Sc Computer Science <em> (in view)</em> <br>
+<strong>January 2022 ~ present</strong></p>
 
-<h3>Certifications</h3>
-<p>
-    <ul>
-        <li>Information management systems</li>
-        <li>Data analysis</li>
-    </ul>
-</p>
 
 <h4>Skills</h4>
 <p>
