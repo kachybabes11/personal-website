@@ -1,0 +1,223 @@
+npm install -g cordova
+cordova create CitizensReportingSolutionApp com.example.citizensreportingsolution CitizensReportingSolutionApp
+cd CitizensReportingSolutionApp
+cordova platform add android
+cordova plugin add cordova-plugin-geolocation
+cordova plugin add cordova-plugin-network-information
+cordova plugin add cordova-plugin-camera
+cordova plugin add cordova-plugin-dialogs
+cordova plugin add cordova-plugin-file
+cordova plugin add cordova-plugin-push
+cordova plugin add cordova-plugin-whitelist
+
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+
+body {
+    font-family: Arial;
+    margin: 20px;
+}
+
+.app {
+    max-width: 600px;
+    margin: auto;
+    padding: 18px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+}
+
+h1, h2 {
+    text-align: center;
+}
+
+button {
+    display: block;
+    width: 100%;
+    margin: 10px 0;
+    font-size: 16px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label, select, textarea, input[type="file"] {
+    margin: 10px 0;
+}
+
+textarea {
+    resize: vertical;
+}
+
+img {
+    display: block;
+    margin: 10px 0;
+}
+</style>
+    <meta charset="UTF-8">
+    <title>Citizens Reporting App</title>
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+</head>
+<body>
+    <div class="app">
+        <h1>Citizens Reporting App</h1>
+        <div id="loginSection">
+            <h2>Login</h2>
+            <input type="text" id="username" placeholder="Username">
+            <input type="password" id="password" placeholder="Password">
+            <button id="loginBtn">Login</button>
+        </div>
+        <div id="mainSection" style="display: none;">
+            <button id="reportIncidentBtn">Report Incident</button>
+            <button id="viewIncidentsBtn">View Incidents</button>
+            <button id="logoutBtn">Logout</button>
+        </div>
+        <div id="incidentForm" style="display: none;">
+            <h2>Report Incident</h2>
+            <form>
+                <label for="type">Type:</label>
+                <select id="type">
+                    <option value="accident">Accident</option>
+                    <option value="fighting">Fighting</option>
+                    <option value="rioting">Rioting</option>
+                </select><br>
+                <label for="description">Description:</label>
+                <textarea id="description"></textarea><br>
+                <label for="photo">Photo:</label>
+                <input type="file" id="photo"><br>
+                <button type="button" id="submitIncidentBtn">Submit</button>
+            </form>
+        </div>
+        <div id="incidentList" style="display: none;">
+            <h2>Submitted Incidents</h2>
+            <select id="categoryFilter">
+                <option value="all">All</option>
+                <option value="accident">Accident</option>
+                <option value="fighting">Fighting</option>
+                <option value="rioting">Rioting</option>
+            </select>
+            <ul id="incidents"></ul>
+        </div>
+    </div>
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+</body>
+</html>
+document.addEventListener('deviceready', function() {
+    const loginBtn = document.getElementById('loginBtn');
+    const reportIncidentBtn = document.getElementById('reportIncidentBtn');
+    const viewIncidentsBtn = document.getElementById('viewIncidentsBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const incidentForm = document.getElementById('incidentForm');
+    const incidentList = document.getElementById('incidentList');
+    const submitIncidentBtn = document.getElementById('submitIncidentBtn');
+    const incidentsUl = document.getElementById('incidents');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const loginSection = document.getElementById('loginSection');
+    const mainSection = document.getElementById('mainSection');
+    
+    let incidents = [];
+    let loggedInUser = null;
+
+    loginBtn.addEventListener('click', function() {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        
+        // Simulate authentication (replace with real authentication)
+        if (username && password) {
+            loggedInUser = username;
+            loginSection.style.display = 'none';
+            mainSection.style.display = 'block';
+        } else {
+            alert('Invalid login credentials');
+        }
+    });
+
+    logoutBtn.addEventListener('click', function() {
+        loggedInUser = null;
+        loginSection.style.display = 'block';
+        mainSection.style.display = 'none';
+        incidentForm.style.display = 'none';
+        incidentList.style.display = 'none';
+    });
+
+    reportIncidentBtn.addEventListener('click', function() {
+        incidentForm.style.display = 'block';
+        incidentList.style.display = 'none';
+    });
+
+    viewIncidentsBtn.addEventListener('click', function() {
+        incidentForm.style.display = 'none';
+        incidentList.style.display = 'block';
+        loadIncidents();
+    });
+
+    submitIncidentBtn.addEventListener('click', function() {
+        const type = document.getElementById('type').value;
+        const description = document.getElementById('description').value;
+        const photoInput = document.getElementById('photo');
+        
+        navigator.geolocation.getCurrentPosition(function(position) {
+            let photoUrl = '';
+
+            if (photoInput.files.length > 0) {
+                const file = photoInput.files[0];
+                const reader = new FileReader();
+                reader.onloadend = function() {
+                    photoUrl = reader.result;
+                    addIncident(type, description, position.coords.latitude, position.coords.longitude, photoUrl);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                addIncident(type, description, position.coords.latitude, position.coords.longitude, photoUrl);
+            }
+        }, function(error) {
+            alert('Error getting location: ' + error.message);
+        });
+    });
+
+    function addIncident(type, description, latitude, longitude, photoUrl) {
+        const incident = {
+            type: type,
+            description: description,
+            latitude: latitude,
+            longitude: longitude,
+            photo: photoUrl,
+            timestamp: new Date().toISOString(),
+            user: loggedInUser
+        };
+
+        incidents.push(incident);
+        alert('Incident reported successfully!');
+        notifyUsers(incident);
+    }
+
+    function loadIncidents() {
+        incidentsUl.innerHTML = '';
+        const selectedCategory = categoryFilter.value;
+        const filteredIncidents = incidents.filter(incident => selectedCategory === 'all' || incident.type === selectedCategory);
+        
+        filteredIncidents.forEach(function(incident) {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                ${incident.timestamp} - ${incident.type}: ${incident.description} 
+                (Lat: ${incident.latitude}, Lon: ${incident.longitude})
+                ${incident.photo ? `<img src="${incident.photo}" style="width: 100px; height: 100px;">` : ''}
+            `;
+            incidentsUl.appendChild(li);
+        });
+    }
+
+    categoryFilter.addEventListener('change', loadIncidents);
+
+    function notifyUsers(incident) {
+        // Simulate push notification (replace with real push notification)
+        alert(`New incident reported: ${incident.type}`);
+    }
+}, false);
+
+cordova build android
+cordova run android
